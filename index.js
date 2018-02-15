@@ -6,13 +6,13 @@ const opn   = require('opn');
 
 const sites = [
     {
-        pattern: /^git@bitbucket\.org:(.*)\.git$/,
+        pattern: /git@bitbucket\.org(?::|\/)(.*)\.git/,
         url:     matches => `https://bitbucket.org/${matches[1]}/issues?status=new&status=open`,
     },
     {
-        pattern: /git@github\.com:(.*)\.git/,
+        pattern: /(?:git@|https?:\/\/)github\.com(?::|\/)(.*)\.git/,
         url:     matches => `https://github.com/${matches[1]}/issues`,
-    }
+    },
 ];
 
 const getIssuesUrl = origin => {
@@ -26,7 +26,7 @@ const getIssuesUrl = origin => {
     return null;
 };
 
-(async () => {
+const main = async () => {
 
     let origin;
 
@@ -41,4 +41,11 @@ const getIssuesUrl = origin => {
 
     if (!url) throw new Error(`${origin}: not a github or bitbucket repository`);
     opn(url, {wait: false});
-})();
+};
+
+if (require.main === module) {
+    main();
+}
+
+module.exports              = main;
+module.exports.getIssuesUrl = getIssuesUrl;
